@@ -1,4 +1,13 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
+using namespace std;
+
+class lilDude {
+public:
+    int state;
+    int mass;
+    int velocity;
+};
 
 int main()
 {

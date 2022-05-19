@@ -31,3 +31,9 @@
 *.out
 *.app
 sfml-app
+
+# build shiz
+/cmake-build-*/
+
+# ide shiz
+/.idea/

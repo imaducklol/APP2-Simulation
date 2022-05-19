@@ -1,11 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 using namespace std;
 
 class Particle {
 public:
-    int id;
+    int id{};
     int state;
     double mass;
     double velocity;
@@ -20,7 +20,7 @@ public:
 };
 
 void ListParticles(const vector<Particle>& particles) {
-    if (particles.size() == 0) cout << "None yet" << endl;
+    if (particles.empty()) cout << "None yet" << endl;
     else
     for (Particle particle : particles) {
         cout <<
@@ -34,11 +34,11 @@ void AddParticle(vector<Particle> *particles) {
     Particle particle;
     double input;
 
-    particle.id = particles->size();
+    particle.id = (int)particles->size();
 
     cout << "dynamic(0), static(1), or mouse controlled(2)\n";
     cin >> input;
-    particle.state = input;
+    particle.state = (int)input;
 
     cout << "mass\n";
     cin >> input;

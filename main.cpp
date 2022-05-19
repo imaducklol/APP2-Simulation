@@ -10,13 +10,15 @@ public:
     double mass;
     double velocity;
     double direction;
-    Particle(int s = 0, double m = 10, double v = 0, double d = 0) {
+    tuple<double> position;
+
+    Particle(int s = 0, double m = 10, double v = 0, double d = 0, tuple<double> p = (0, 0)) {
         state = s;
         mass = m;
         velocity = v;
         direction = d;
+        position = p;
     }
-
 };
 
 void ListParticles(const vector<Particle>& particles) {
@@ -24,17 +26,17 @@ void ListParticles(const vector<Particle>& particles) {
     else
     for (Particle particle : particles) {
         cout <<
-        particle.id    << endl <<
-        particle.state << endl <<
-        particle.mass  << endl << endl;
+        "id " << particle.id    << endl <<
+        "state " << particle.state << endl <<
+        "mass " << particle.mass  << endl << endl;
     }
 }
 
-void AddParticle(vector<Particle> *particles) {
+void AddParticle(vector<Particle> &particles) {
     Particle particle;
     double input;
 
-    particle.id = (int)particles->size();
+    particle.id = (int)particles.size();
 
     cout << "dynamic(0), static(1), or mouse controlled(2)\n";
     cin >> input;
@@ -48,11 +50,19 @@ void AddParticle(vector<Particle> *particles) {
     cin >> input;
     particle.velocity = input;
 
-    cout << "dynamic(0), static(1), or mouse controlled(2)\n";
+    cout << "direction\n";
     cin >> input;
     particle.direction = input;
 
-    particles->push_back(particle);
+    cout << "pos x\n";
+    cin >> input;
+    particle.position. = input;
+
+    cout << "pos y\n";
+    cin >> input;
+    particle.direction = input;
+
+    particles.push_back(particle);
 }
 
 int main() {
@@ -67,7 +77,7 @@ int main() {
 
         switch (input) {
             case 1: {
-
+                AddParticle(particles);
                 break;
             }
             case 2: {
@@ -85,9 +95,11 @@ int main() {
     }
     programStart:
 
-    sf::RenderWindow window(sf::VideoMode(200, 200), "Simulation");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
+    // Screen Setup
+    int XRes = 400;
+    int YRes = 400;
+
+    sf::RenderWindow window(sf::VideoMode(XRes, YRes), "Simulation");
 
     while (window.isOpen())
     {
@@ -99,7 +111,6 @@ int main() {
         }
 
         window.clear();
-        window.draw(shape);
         window.display();
     }
 

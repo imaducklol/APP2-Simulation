@@ -8,16 +8,18 @@ public:
     int id{};
     int state;
     double mass;
-    double velocity;
-    double direction;
-    tuple<double> position;
+    double vel;
+    double dir;
+    double XPos;
+    double YPos;
 
-    Particle(int s = 0, double m = 10, double v = 0, double d = 0, tuple<double> p = (0, 0)) {
+    Particle(int s = 0, double m = 10, double v = 0, double d = 0, double x = 0, double y = 0) {
         state = s;
         mass = m;
-        velocity = v;
-        direction = d;
-        position = p;
+        vel = v;
+        dir = d;
+        XPos = x;
+        YPos = y;
     }
 };
 
@@ -48,19 +50,19 @@ void AddParticle(vector<Particle> &particles) {
 
     cout << "velocity\n";
     cin >> input;
-    particle.velocity = input;
+    particle.vel = input;
 
     cout << "direction\n";
     cin >> input;
-    particle.direction = input;
+    particle.dir = input;
 
     cout << "pos x\n";
     cin >> input;
-    particle.position. = input;
+    particle.XPos = input;
 
     cout << "pos y\n";
     cin >> input;
-    particle.direction = input;
+    particle.YPos = input;
 
     particles.push_back(particle);
 }

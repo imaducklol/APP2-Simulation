@@ -13,7 +13,7 @@ public:
     double XPos;
     double YPos;
 
-    Particle(int s = 0, double m = 10, double v = 0, double d = 0, double x = 0, double y = 0) {
+    explicit Particle(int s = 0, double m = 10, double v = 0, double d = 0, double x = 0, double y = 0) {
         state = s;
         mass = m;
         vel = v;
@@ -22,17 +22,6 @@ public:
         YPos = y;
     }
 };
-
-void ListParticles(const vector<Particle>& particles) {
-    if (particles.empty()) cout << "None yet" << endl;
-    else
-    for (Particle particle : particles) {
-        cout <<
-        "id " << particle.id    << endl <<
-        "state " << particle.state << endl <<
-        "mass " << particle.mass  << endl << endl;
-    }
-}
 
 void AddParticle(vector<Particle> &particles) {
     Particle particle;
@@ -48,13 +37,13 @@ void AddParticle(vector<Particle> &particles) {
     cin >> input;
     particle.mass = input;
 
-    cout << "velocity\n";
+    /*cout << "velocity\n";
     cin >> input;
     particle.vel = input;
 
     cout << "direction\n";
     cin >> input;
-    particle.dir = input;
+    particle.dir = input;*/
 
     cout << "pos x\n";
     cin >> input;
@@ -65,6 +54,17 @@ void AddParticle(vector<Particle> &particles) {
     particle.YPos = input;
 
     particles.push_back(particle);
+}
+
+void ListParticles(const vector<Particle>& particles) {
+    if (particles.empty()) cout << "None yet" << endl;
+    else
+    for (Particle particle : particles) {
+        cout <<
+        "id " << particle.id    << endl <<
+        "state " << particle.state << endl <<
+        "mass " << particle.mass  << endl << endl;
+    }
 }
 
 int main() {
@@ -103,11 +103,9 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(XRes, YRes), "Simulation");
 
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
+    while (window.isOpen()) {
+        sf::Event event{};
+        while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }

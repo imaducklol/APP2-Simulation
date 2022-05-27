@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
 #include <cmath>
 using namespace std;
 
@@ -8,18 +9,19 @@ public:
     int id{};
     int state;
     double mass;
-    double vel;
-    double dir;
+    double XVel;
+    double YVel;
     double XPos;
     double YPos;
+    sf::CircleShape shape;
 
-    explicit Particle(int s = 0, double m = 10, double v = 0, double d = 0, double x = 0, double y = 0) {
-        state = s;
-        mass = m;
-        vel = v;
-        dir = d;
-        XPos = x;
-        YPos = y;
+    explicit Particle(int istate = 0, double imass = 10, double ixvel = 0, double yvel = 0, double ixpos= 0, double iypos = 0) {
+        state = istate;
+        mass = imass;
+        XVel = ixvel;
+        YVel = yvel;
+        XPos = ixpos;
+        YPos = iypos;
     }
 };
 
@@ -37,11 +39,11 @@ void AddParticle(vector<Particle> &particles) {
     cin >> input;
     particle.mass = input;
 
-    /*cout << "velocity\n";
+    /*cout << "vel x\n";
     cin >> input;
     particle.vel = input;
 
-    cout << "direction\n";
+    cout << "vel y\n";
     cin >> input;
     particle.dir = input;*/
 
@@ -70,6 +72,7 @@ void ListParticles(const vector<Particle>& particles) {
 int main() {
     // Particle setup
     double gConst = 6.6743 * pow(10, 2);
+    double rad2dec = 180 / atan(1) * 4;
     vector<Particle> particles;
 
     while (true) {
@@ -97,20 +100,56 @@ int main() {
     }
     programStart:
 
+    // Initialize the actual circle shape for sfml, binding the size
+    for (Particle& particle : particles) {
+        double x = particle.mass;
+        /*if (x < -100) {
+            particle.shape.setRadius(abs(.05 * x - 95));
+        } else if (x >= -100 && x <= 100) {
+            particle.shape.setRadius(abs(x));
+        } else if (x > 100) {
+            particle.shape.setRadius(abs(.05 * x + 95));
+        }*/
+        particle.shape.setRadius(abs(x));
+
+        particle.shape.setPosition(particle.XPos, particle.YPos);
+    }
+
     // Screen Setup
     int XRes = 400;
     int YRes = 400;
-
     sf::RenderWindow window(sf::VideoMode(XRes, YRes), "Simulation");
 
     while (window.isOpen()) {
         sf::Event event{};
+        sf::Clock clock;
+        // Closing
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
+        // Calculations
+        for (Particle particle : particles) {
+            for (Particle opParticle : particles) {
+                if (particle.id == opParticle.id) continue;
+
+                double deltaX = opParticle.XPos - particle.XPos;
+                double deltaY = opParticle.YPos - particle.YPos;
+                double XAccel = particle.mass * opParticle.mass * gConst / (deltaX * deltaX);
+                double YAccel = particle.mass * opParticle.mass * gConst / (deltaY * deltaY);
+
+                particle.XVel += XAccel * clock.getElapsedTime().asSeconds();
+                particle.YVel += XAccel * clock.getElapsedTime().asSeconds();
+            }
+        }
+
+
+        clock.restart();
         window.clear();
+        for (Particle particle : particles) {
+            window.draw(particle.shape);
+        }
         window.display();
     }
 

@@ -72,12 +72,12 @@ void ListParticles (const vector<Particle>& particles) {
 
 int main() {
     // Particle setup
-    double gConst = 6.6743 * pow(10, 2);
+    double gConst = 6.6743 * pow(10, -11);
     double rad2dec = 180 / atan(1) * 4;
     double multiplier = 10000000;
     vector<Particle> particles;
 
-    while (true) {
+    /*while (true) {
         int input;
         cout << "Add Particle (1), list particles (2), run simulation (3)\n";
         cin >> input;
@@ -100,7 +100,11 @@ int main() {
             }
         }
     }
-    programStart:
+    programStart:*/
+    Particle particle1(0, 100, 0, 0, 100, 100);
+    Particle particle2(0, 100, 0, 0, 300, 250);
+    particles.push_back(particle1);
+    particles.push_back(particle2);
 
     // Initialize the actual circle shape for sfml
     for (Particle& particle : particles) {
@@ -152,13 +156,16 @@ int main() {
 
                 double deltaX = opParticle.XPos - particle.XPos;
                 double deltaY = opParticle.YPos - particle.YPos;
-                XAccel += particle.mass * opParticle.mass * gConst / (deltaX * deltaX) / particle.mass;
-                YAccel += particle.mass * opParticle.mass * gConst / (deltaY * deltaY) / particle.mass;
+                //        ( force                                                    ) / (mass       )
+                XAccel += particle.mass * opParticle.mass * gConst / (deltaX * deltaX) / particle.mass
+                        * (abs(deltaX) / deltaX);
+                YAccel += particle.mass * opParticle.mass * gConst / (deltaY * deltaY) / particle.mass
+                        * (abs(deltaY) / deltaY);
             }
             particle.XVel += XAccel * clock.getElapsedTime().asSeconds();
             particle.YVel += YAccel * clock.getElapsedTime().asSeconds();
-            particle.XPos += particle.XVel * clock.getElapsedTime().asSeconds()/* * multiplier*/;
-            particle.YPos += particle.YVel * clock.getElapsedTime().asSeconds()/* * multiplier*/;
+            particle.XPos += particle.XVel * clock.getElapsedTime().asSeconds();
+            particle.YPos += particle.YVel * clock.getElapsedTime().asSeconds();
 
             float radius = particle.shape.getRadius();
             particle.shape.setPosition(particle.XPos - radius, particle.YPos - radius);

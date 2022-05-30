@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -7,7 +8,7 @@ using namespace std;
 
 class Particle {
 public:
-    int id{};
+    int id;
     int state;
     double mass;
     double XVel;
@@ -16,11 +17,12 @@ public:
     double YPos;
     sf::CircleShape shape;
 
-    explicit Particle(int istate = 0, double imass = 10, double ixvel = 0, double yvel = 0, double ixpos= 0, double iypos = 0) {
+    explicit Particle(int iid = 0, int istate = 0, double imass = 10, double ixvel = 0, double ivel = 0, double ixpos= 0, double iypos = 0) {
+        id = iid;
         state = istate;
         mass = imass;
         XVel = ixvel;
-        YVel = yvel;
+        YVel = ivel;
         XPos = ixpos;
         YPos = iypos;
     }
@@ -74,10 +76,10 @@ int main() {
     // Particle setup
     double gConst = 6.6743 * pow(10, -11);
     double rad2dec = 180 / atan(1) * 4;
-    double multiplier = 10000000;
+    uint64_t multiplier = INT64_MAX;
     vector<Particle> particles;
 
-    /*while (true) {
+    while (true) {
         int input;
         cout << "Add Particle (1), list particles (2), run simulation (3)\n";
         cin >> input;
@@ -100,11 +102,13 @@ int main() {
             }
         }
     }
-    programStart:*/
-    Particle particle1(0, 100, 0, 0, 100, 100);
-    Particle particle2(0, 100, 0, 0, 300, 250);
+    programStart:
+    /*Particle particle1(0, 0, 100, 0, 0, 100, 100);
+    Particle particle2(1, 0, 100, 0, 0, 600, 600);
+    Particle particle3(3, 0, 100, 0, 0, 100, 600);
     particles.push_back(particle1);
     particles.push_back(particle2);
+    particles.push_back(particle3);*/
 
     // Initialize the actual circle shape for sfml
     for (Particle& particle : particles) {
@@ -125,15 +129,24 @@ int main() {
     // SFML Setup
     int XRes = 400;
     int YRes = 400;
+    sf::ContextSettings settings;
+    settings.antialiasingLevel = 9.0;
     sf::RenderWindow window(sf::VideoMode(XRes, YRes), "Simulation");
-    window.setFramerateLimit(15);
+    window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(true);
+
     /*sf::Font font;
     font.loadFromFile("../arial.ttf");
-    sf::Text tFPS(to_string(fFPS), font);
-    tFPS.setCharacterSize(20);
+    sf::Text p1p;
+    sf::Text p2p;
+    p1p.setFont(font);
+    p2p.setFont(font);
+    p1p.setCharacterSize(20);
+    p2p.setCharacterSize(20);
     //tFPS.setFillColor(Color::White);
     //tFPS.setStyle(Text::Bold);
-    tFPS.setPosition(30, 30);*/
+    p1p.setPosition(200, 30);
+    p2p.setPosition(200, 60);*/
 
 
     // Main loop
@@ -156,11 +169,19 @@ int main() {
 
                 double deltaX = opParticle.XPos - particle.XPos;
                 double deltaY = opParticle.YPos - particle.YPos;
-                //        ( force                                                    ) / (mass       )
-                XAccel += particle.mass * opParticle.mass * gConst / (deltaX * deltaX) / particle.mass
-                        * (abs(deltaX) / deltaX);
-                YAccel += particle.mass * opParticle.mass * gConst / (deltaY * deltaY) / particle.mass
-                        * (abs(deltaY) / deltaY);
+                double XForce = particle.mass * opParticle.mass * gConst / (deltaX * deltaX);
+                double YForce = particle.mass * opParticle.mass * gConst / (deltaY * deltaY);
+
+                //        (force)/ (mass       ) * (direction              ) * (mult    )
+                XAccel += XForce / particle.mass * (abs(deltaX) / deltaX) * multiplier;
+                YAccel += YForce / particle.mass * (abs(deltaY) / deltaY) * multiplier;
+
+                /*// Display
+                if(particle.id == 0) {
+                    p1p.setString(to_string(XForce) + " " + to_string(YForce));
+                } else {
+                    p2p.setString(to_string(XForce) + " " + to_string(YForce));
+                }*/
             }
             particle.XVel += XAccel * clock.getElapsedTime().asSeconds();
             particle.YVel += YAccel * clock.getElapsedTime().asSeconds();
@@ -171,13 +192,13 @@ int main() {
             particle.shape.setPosition(particle.XPos - radius, particle.YPos - radius);
         }
 
-
-
         clock.restart();
         window.clear();
-        for (Particle particle : particles) {
+        for (const Particle& particle : particles) {
             window.draw(particle.shape);
         }
+        /*window.draw(p1p);
+        window.draw(p2p);*/
         window.display();
     }
 

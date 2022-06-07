@@ -66,9 +66,9 @@ void ListParticles (const vector<Particle>& particles) {
     else
     for (Particle particle : particles) {
         cout <<
-        "id " << particle.id    << endl <<
+        "id "    << particle.id    << endl <<
         "state " << particle.state << endl <<
-        "mass " << particle.mass  << endl << endl;
+        "mass "  << particle.mass  << endl << endl;
     }
 }
 
@@ -76,11 +76,10 @@ int main() {
     // Particle setup
     double gConst = 6.6743 * pow(10, -11);
     //double rad2dec = 180 / atan(1) * 4;
-    uint64_t multiplier = INT64_MAX;
-    multiplier = 1000000000000;
+    double multiplier = 100000000000000;
     vector<Particle> particles;
 
-    /*while (true) {
+    while (true) {
         int input;
         cout << "Add Particle (1), list particles (2), run simulation (3)\n";
         cin >> input;
@@ -103,10 +102,10 @@ int main() {
             }
         }
     }
-    programStart:*/
+    programStart:
     /*Particle particle1(0, 0, 100, 0, 0, 100, 100);
     Particle particle2(1, 0, 100, 0, 0, 600, 600);
-    Particle particle3(3, 0, 100, 0, 0, 100, 600);
+    Particle particle3(2, 0, 100, 0, 0, 100, 600);
     particles.push_back(particle1);
     particles.push_back(particle2);
     particles.push_back(particle3);*/
@@ -114,13 +113,7 @@ int main() {
     // Initialize the actual circle shape for sfml
     for (Particle& particle : particles) {
         double x = particle.mass;
-        /*if (x < -100) {
-            particle.shape.setRadius(abs(.05 * x - 95));
-        } else if (x >= -100 && x <= 100) {
-            particle.shape.setRadius(abs(x));
-        } else if (x > 100) {
-            particle.shape.setRadius(abs(.05 * x + 95));
-        }*/
+
         double radius = abs(x);
         particle.shape.setRadius(radius);
 
@@ -158,16 +151,17 @@ int main() {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::MouseButtonReleased) {
+             if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
+                    cout << "Click" << endl;
                     double x = sf::Mouse::getPosition(window).x;
                     double y = sf::Mouse::getPosition(window).y;
                     Particle particle(particles.size(), 0, 10, 0, 0, x, y);
 
                     double radius = abs(particle.mass);
                     particle.shape.setRadius(radius);
-                    particle.shape.setFillColor(sf::Color::White);
-                    particle.shape.setPosition(particle.XPos - radius, particle.YPos - radius);
+                    particle.shape.setOrigin(radius, radius);
+                    particle.shape.setPosition(particle.XPos, particle.YPos);
                     particles.push_back(particle);
                 }
             }
@@ -177,6 +171,7 @@ int main() {
         for (Particle& particle : particles) {
             double XAccel = 0;
             double YAccel = 0;
+            double time = clock.getElapsedTime().asSeconds();
             for (const Particle& opParticle : particles) {
                 if (particle.id == opParticle.id) continue;
 
@@ -196,13 +191,12 @@ int main() {
                     p2p.setString(to_string(XForce) + " " + to_string(YForce));
                 }*/
             }
-            particle.XVel += XAccel * clock.getElapsedTime().asSeconds();
-            particle.YVel += YAccel * clock.getElapsedTime().asSeconds();
-            particle.XPos += particle.XVel * clock.getElapsedTime().asSeconds();
-            particle.YPos += particle.YVel * clock.getElapsedTime().asSeconds();
+            particle.XVel += XAccel * time;
+            particle.YVel += YAccel * time;
+            particle.XPos += particle.XVel * time;
+            particle.YPos += particle.YVel * time;
 
-            float radius = particle.shape.getRadius();
-            particle.shape.setPosition(particle.XPos - radius, particle.YPos - radius);
+            particle.shape.setPosition(particle.XPos, particle.YPos);
         }
 
         clock.restart();

@@ -75,11 +75,12 @@ void ListParticles (const vector<Particle>& particles) {
 int main() {
     // Particle setup
     double gConst = 6.6743 * pow(10, -11);
-    double rad2dec = 180 / atan(1) * 4;
+    //double rad2dec = 180 / atan(1) * 4;
     uint64_t multiplier = INT64_MAX;
+    multiplier = 1000000000000;
     vector<Particle> particles;
 
-    while (true) {
+    /*while (true) {
         int input;
         cout << "Add Particle (1), list particles (2), run simulation (3)\n";
         cin >> input;
@@ -102,7 +103,7 @@ int main() {
             }
         }
     }
-    programStart:
+    programStart:*/
     /*Particle particle1(0, 0, 100, 0, 0, 100, 100);
     Particle particle2(1, 0, 100, 0, 0, 600, 600);
     Particle particle3(3, 0, 100, 0, 0, 100, 600);
@@ -130,7 +131,7 @@ int main() {
     int XRes = 400;
     int YRes = 400;
     sf::ContextSettings settings;
-    settings.antialiasingLevel = 9.0;
+    settings.antialiasingLevel = 8.0;
     sf::RenderWindow window(sf::VideoMode(XRes, YRes), "Simulation");
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(true);
@@ -150,14 +151,26 @@ int main() {
 
 
     // Main loop
+    sf::Clock clock;
     while (window.isOpen()) {
         sf::Event event{};
-        sf::Clock clock;
 
-        // Closing
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::MouseButtonReleased) {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    double x = sf::Mouse::getPosition(window).x;
+                    double y = sf::Mouse::getPosition(window).y;
+                    Particle particle(particles.size(), 0, 10, 0, 0, x, y);
+
+                    double radius = abs(particle.mass);
+                    particle.shape.setRadius(radius);
+                    particle.shape.setFillColor(sf::Color::White);
+                    particle.shape.setPosition(particle.XPos - radius, particle.YPos - radius);
+                    particles.push_back(particle);
+                }
+            }
         }
 
         // Calculations
@@ -197,8 +210,7 @@ int main() {
         for (const Particle& particle : particles) {
             window.draw(particle.shape);
         }
-        /*window.draw(p1p);
-        window.draw(p2p);*/
+
         window.display();
     }
 

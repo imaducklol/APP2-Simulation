@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(APP2-Simulation)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(APP2-Simulation main.cpp)
 

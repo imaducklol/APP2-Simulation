@@ -35,13 +35,16 @@ int main() {
         sf::Event event{};
 
         while (window.pollEvent(event)) {
+            // Exiting
             if (event.type == sf::Event::Closed)
                 window.close();
+            // Reset mouse click
             if (event.type == sf::Event::MouseButtonReleased) {
                if (event.mouseButton.button == sf::Mouse::Left) {
                    clickLock = false;
                }
             }
+            // On mouse click spawn particle
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left && !clickLock) {
                     clickLock = true;
@@ -49,7 +52,9 @@ int main() {
                     /*cout << "Mass? " << endl;
                     double mass;
                     cin >> mass;*/
-                    Particle particle((int)particles.size(), 0, 15);
+                    // Set particle id (position in list), state (unused),
+                    // and mass/magnitude (used as mass right now for gravity sim)
+                    Particle particle((int)particles.size(), 0, 100);
                     particle.Initialize();
                     particle.Set(mousePos.x,mousePos.y);
 
@@ -59,11 +64,15 @@ int main() {
         }
 
         // Calculations
+        // Get elapsed time, just as one variable so that they all use the same amount
         double elapsedTime = clock.getElapsedTime().asSeconds();
         for (Particle& particle : particles) {
+            // Calculate acceleration
             particle.Calculate(particles, multiplier);
+            // Calculate velocity based on acceleration and passed time
             particle.XVel += particle.XAcc * elapsedTime;
             particle.YVel += particle.YAcc * elapsedTime;
+            // Move particle based on velocity
             particle.Move(particle.XVel, particle.YVel);
         }
 

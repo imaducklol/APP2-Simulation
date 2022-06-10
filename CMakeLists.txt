@@ -4,7 +4,7 @@ project(APP2-Simulation)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(APP2-Simulation main.cpp)
+add_executable(APP2-Simulation main.cpp particle.h)
 
 
 
@@ -12,7 +12,7 @@ add_executable(APP2-Simulation main.cpp)
 
 #set(SOURCE_FILES main.cpp)
 #add_executable(HelloSFML ${SOURCE_FILES})
-include_directories(/usr/local/include)
+#include_directories(/usr/local/include)
 
 find_package(SFML 2.5 COMPONENTS system window graphics network audio REQUIRED)
 include_directories(${SFML_INCLUDE_DIRS})

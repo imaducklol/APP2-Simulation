@@ -3,7 +3,7 @@
 
 #endif //APP2_SIMULATION_PARTICLE_H
 #include <SFML/Graphics.hpp>
-#include <iostream>
+#include <algorithm>
 
 class Particle {
 public:
@@ -36,8 +36,11 @@ Particle::Particle(int i, int s, int m) {
 
 // Set radius and origin based off of that
 void Particle::Initialize() {
-    shape.setRadius((float)abs(magnitude));
-    shape.setOrigin((float)magnitude, (float)magnitude);
+    auto radius = (float)abs(magnitude);
+    shape.setRadius(radius);
+    shape.setOrigin(radius, radius);
+    shape.setOutlineColor(sf::Color::Black);
+    shape.setOutlineThickness(2);
 }
 
 // Move it
@@ -60,12 +63,9 @@ void Particle::Calculate(std::vector <Particle> & particles, double multiplier) 
         double XDelta = particle.shape.getPosition().x - shape.getPosition().x;
         double YDelta = particle.shape.getPosition().y - shape.getPosition().y;
         double distanceSquared = pow(sqrt(XDelta * XDelta + YDelta * YDelta), 2);
-        // Sign (positive / negative) of the difference
-        int XSign = (int)(abs(XDelta) / XDelta);
-        int YSign = (int)(abs(YDelta) / YDelta);
 
         double XForce = particle.magnitude * magnitude * multiplier * XDelta / pow(distanceSquared, 3/2);
-        double YForce = particle.magnitude * magnitude * multiplier * XDelta / pow(distanceSquared, 3/2);
+        double YForce = particle.magnitude * magnitude * multiplier * YDelta / pow(distanceSquared, 3/2);
 
         XAcc += XForce / magnitude;
         YAcc += YForce / magnitude;
